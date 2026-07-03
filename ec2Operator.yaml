@@ -1,0 +1,17 @@
+kind: EC2instance
+apiVersion: compute.domain.com/v1
+metadata:
+	name: myinstance
+	namespace: default
+spec:
+	amiId: mydummyamiId
+  ssh-Key: my-keypair
+  type: t3-micro
+	storage:
+		standard:
+			size: 10Gi
+		fast:
+			size: 50Gi
+status:
+  phase: Running
+  publicIp: 1.2.3.4

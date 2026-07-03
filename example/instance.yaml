@@ -1,0 +1,18 @@
+apiVersion: compute.cloud.com/v1
+kind: ec2instance
+metadata:
+  name: kubernetes-object-for-ec2
+spec:
+  amiId: "ami-1234567890abcdef0"
+  sshKey: "my-ssh-key"
+  instanceType: "t3.medium"
+  subnet: "subnet-0bb1c79de3EXAMPLE"
+  tags:
+    enviroment: "dev"
+    owner: "alice"
+  storage:
+    size: 50
+    type: "gp2"
+  instanceName: "My-ec2-instance"
+  
+

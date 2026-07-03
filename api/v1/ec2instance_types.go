@@ -25,38 +25,56 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 // EC2instanceSpec defines the desired state of EC2instance
-type EC2instanceSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-	// The following markers will use OpenAPI v3 schema to validate the value
-	// More info: https://book.kubebuilder.io/reference/markers/crd-validation.html
+type StorageSpec struct {
+    Size int    `json:"size,omitempty"`
+    Type string `json:"type,omitempty"`
+}
 
-	// foo is an example field of EC2instance. Edit ec2instance_types.go to remove/update
-	// +optional
-	Foo *string `json:"foo,omitempty"`
+type EC2instanceSpec struct {
+    InstanceType      string            `json:"instanceType"`
+	AMIId             string            `json:"amiId"`
+	Region            string            `json:"region"`
+	AvailabilityZone  string            `json:"availabilityZone,omitempty"`
+	KeyPair           string            `json:"keyPair,omitempty"`
+	SecurityGroups    []string          `json:"securityGroups,omitempty"`
+	Subnet            string            `json:"subnet,omitempty"`
+	UserData          string            `json:"userData,omitempty"`
+	Tags              map[string]string `json:"tags,omitempty"`
+	Storage           StorageConfig     `json:"storage,omitempty"`
+	AssociatePublicIP bool              `json:"associatePublicIP,omitempty"`
+	InstanceName	   string            `json:"instanceName,omitempty"`
 }
 
 // EC2instanceStatus defines the observed state of EC2instance.
 type EC2instanceStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+    InstanceID string       `json:"instanceId,omitempty"`
+	State      string       `json:"state,omitempty"`
+	PublicIP   string       `json:"publicIP,omitempty"`
+	PrivateIP  string       `json:"privateIP,omitempty"`
+	PublicDNS  string       `json:"publicDNS,omitempty"`
+	PrivateDNS string       `json:"privateDNS,omitempty"`
+	LaunchTime *metav1.Time `json:"launchTime,omitempty"`
+}
 
-	// For Kubernetes API conventions, see:
-	// https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#typical-status-properties
+type StorageConfig struct {
+	RootVolume        VolumeConfig   `json:"rootVolume"`
+	AdditionalVolumes []VolumeConfig `json:"additionalVolumes,omitempty"`
+}
 
-	// conditions represent the current state of the EC2instance resource.
-	// Each condition has a unique type and reflects the status of a specific aspect of the resource.
-	//
-	// Standard condition types include:
-	// - "Available": the resource is fully functional
-	// - "Progressing": the resource is being created or updated
-	// - "Degraded": the resource failed to reach or maintain its desired state
-	//
-	// The status of each condition is one of True, False, or Unknown.
-	// +listType=map
-	// +listMapKey=type
-	// +optional
-	Conditions []metav1.Condition `json:"conditions,omitempty"`
+// VolumeConfig defines the configuration for a volume.
+type VolumeConfig struct {
+	Size       int32  `json:"size"`
+	Type       string `json:"type,omitempty"`
+	DeviceName string `json:"deviceName,omitempty"`
+	Encrypted  bool   `json:"encrypted,omitempty"`
+}
+
+type Condition struct {
+	Type               string      `json:"type"`
+	Status             string      `json:"status"`
+	LastTransitionTime metav1.Time `json:"lastTransitionTime"`
+	Reason             string      `json:"reason,omitempty"`
+	Message            string      `json:"message,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -87,7 +105,14 @@ type EC2instanceList struct {
 	metav1.ListMeta `json:"metadata,omitzero"`
 	Items           []EC2instance `json:"items"`
 }
-
+type CreatedInstanceInfo struct {
+	InstanceID string `json:"instanceId"`
+	PublicIP   string `json:"publicIP"`
+	PrivateIP  string `json:"privateIP"`
+	PublicDNS  string `json:"publicDNS"`
+	PrivateDNS string `json:"privateDNS"`
+	State      string `json:"state"`
+}
 func init() {
 	SchemeBuilder.Register(func(s *runtime.Scheme) error {
 		s.AddKnownTypes(SchemeGroupVersion, &EC2instance{}, &EC2instanceList{})

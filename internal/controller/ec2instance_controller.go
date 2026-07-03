@@ -47,8 +47,17 @@ type EC2instanceReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.24.1/pkg/reconcile
 func (r *EC2instanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = logf.FromContext(ctx)
-
+	l := logf.FromContext(ctx)
+	ec2Instance := &computev1.EC2instance{}
+	r.Get(ctx, req.NamespacedName, ec2Instance)
+	fmt.Println("Reconcile called for EC2instance:", ec2Instance.Spec.InstanceName)
+	fmt.Println("Spec:", ec2Instance.Spec)
+	fmt.Println("Status:", ec2Instance.Status)
+	fmt.Println("InstanceType:", ec2Instance.Status.InstanceType)
+	fmt.Println("Tags:", ec2Instance.Spec.Tags)
+	fmt.Println("Storage:", ec2Instance.Spec.Storage)
+	fmt.Println("SshKey:", ec2Instance.Spec.SshKey)
+	fmt.Println("AMI ID:", ec2Instance.Spec.AmiId)
 	// TODO(user): your logic here
 
 	return ctrl.Result{}, nil
